@@ -11,6 +11,7 @@ TagManager:
   - Selectable4
   - Selectable5
   - Ground
+  - Floor
   layers:
   - Default
   - TransparentFX

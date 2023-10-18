@@ -58,4 +58,38 @@ Everything on a 4/4 Except kitchen supplies  6/6  Standard jeep size lookup -and
 
 can we use the dimensions/weight from the presentation ?
 
+
+
+
+
+Weights as in ppt. 
+
+No of boxes max ?
+if big , if med
+
+Scenarios detailed and write up so we can prep for info that needs to go in. 
+
+Done with simpler version of sonar. 
+
+Adam working on compatible Android version for the app. Rapid runway repair. 
+
+Units for measurements ?
+
+Size is relative what too use ? depends on how mayn we need to fit in box.
+
+Fixed an issue where box was multi spawning. 
+
+Fixed an issue where box could be placed anywhere created an invisable boundary so box stays at certain level during placement.
+
+Fixed orientation lock.
+
+21 Slots ? or boxes according to ppt ?
+
+
+
+
+
 */
+
+
+
