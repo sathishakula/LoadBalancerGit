@@ -1,5 +1,4 @@
 using UnityEngine;
-using TMPro;
 
 public class GrabScript3 : MonoBehaviour
 {
@@ -14,13 +13,6 @@ public class GrabScript3 : MonoBehaviour
     private bool isPlacing = false;
     private int selectedPrefabIndex = -1;
     private Vector3 lastTransparentPosition; // Store the last transparent object's position
-
-    public TextMeshProUGUI weightText; 
-
-    private int weight1 = 1;
-    private int weight2 = 2;
-    private int weight3 = 3;
-    private int totalWeight = 0;
 
     private void Update()
     {
@@ -116,30 +108,6 @@ public class GrabScript3 : MonoBehaviour
             GameObject placedObject = Instantiate(regularPrefabs[selectedPrefabIndex], transparentObject.transform.position, currentRotation);
 
             pivotLineManager.placedObjects.Add(placedObject);
-
-            switch(selectedPrefabIndex)
-            {
-                case 0:
-                    totalWeight += weight1;
-                    break;
-                case 1:
-                    totalWeight += weight1;
-                    break;
-                case 2:
-                    totalWeight += weight2;
-                    break;
-                case 3:
-                    totalWeight += weight1;
-                    break;
-                case 4:
-                    totalWeight += weight2;
-                    break;
-                case 5:
-                    totalWeight += weight3; 
-                    break;
-            }
-
-            weightText.SetText(totalWeight.ToString() + " kg");
            
         }
 
