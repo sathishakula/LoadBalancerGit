@@ -12,6 +12,7 @@ TagManager:
   - Selectable5
   - Ground
   - Floor
+  - PlacedObject
   layers:
   - Default
   - TransparentFX

@@ -1,41 +1,134 @@
-
-
-
 using UnityEngine;
+using System.Collections.Generic;
 
-public class GrabScript: MonoBehaviour
+public class GrabScript : MonoBehaviour
 {
-    public GameObject[] transparentPrefabs; // Array of transparent prefabs
-    public GameObject[] regularPrefabs; // Array of regular prefabs
+    public GameObject[] transparentPrefabs;
+    public GameObject[] regularPrefabs;
     public Camera cam;
+    public float distanceFromPlayer = 2.0f;
+    public PivotLineManager pivotLineManager;
+    public GameObject centerLine; // Reference to the pivot object
+
     private GameObject transparentObject;
-    private GameObject placingObject; // Object that follows the cursor while placing
     private bool isPlacing = false;
     private int selectedPrefabIndex = -1;
-    public float distanceFromPlayer = 2.0f; // Adjust the value as needed
-    public float distanceFromPlayerWhilePlacing = 2.0f; // Adjust the value as needed
-    public PivotLineManager pivotLineManager;
+    private Vector3 lastTransparentPosition;
+
+    private List<GameObject> placedObjects = new List<GameObject>(); // Track all placed objects
+
+    private class PlacedObjectData
+    {
+        public GameObject Object;
+        public float DistanceFromPivot;
+        public float AngleFromPivot;
+
+        public PlacedObjectData(GameObject obj, float distance, float angle)
+        {
+            Object = obj;
+            DistanceFromPivot = distance;
+            AngleFromPivot = angle;
+        }
+    }
+
+    private List<PlacedObjectData> placedObjectsData = new List<PlacedObjectData>(); // Store pivot movement values
+
+    /*  private void Update()
+      {
+          if (Input.GetMouseButtonDown(0))
+          {
+              RaycastHit hit;
+              Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+              if (Physics.Raycast(ray, out hit))
+              {
+                  GameObject clickedObject = hit.collider.gameObject;
+
+                  // Delete object if it's a placed object and clicked again
+                  if (placedObjects.Contains(clickedObject) && !isPlacing)
+                  {
+                      // Remove from placedObjects and placedObjectsData before destroying
+                      placedObjects.Remove(clickedObject);
+                      placedObjectsData.RemoveAll(data => data.Object == clickedObject);
+                      Destroy(clickedObject);
+                  }
+                  else if (isPlacing)
+                  {
+                      Debug.Log("Enetered place object");
+                      PlaceObject();
+                  }
+                  else
+                  {
+                      SelectObject();
+                  }
+              }
+          }
+
+          if (isPlacing)
+          {
+              UpdatePlacingObjectPosition();
+              RotatePlacingObject();
+          }
+      }
+      */
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0)) // Left mouse button
         {
-            Debug.Log("mouse clicked");
-            if (isPlacing)
+            RaycastHit hit;
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit))
             {
-                PlaceObject();
-            }
-            else
-            {
-                SelectObject();
+                GameObject clickedObject = hit.collider.gameObject;
+
+                
+                if (isPlacing)
+                {
+                    PlaceObject();
+                }
+                else
+                {
+                    SelectObject();
+                }
             }
         }
 
-        if (isPlacing)
+        if (Input.GetMouseButtonDown(1)) // Right mouse button
+        {
+            RaycastHit hit;
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                GameObject clickedObject = hit.collider.gameObject;
+                 
+                if (placedObjects.Contains(clickedObject))
+                {
+                    RemoveAndDestroyPlacedObject(clickedObject);
+                }
+            }
+        }
+
+        if (isPlacing && transparentObject != null)
         {
             UpdatePlacingObjectPosition();
             RotatePlacingObject();
         }
     }
+
+    private void RemoveAndDestroyPlacedObject(GameObject objectToRemove)
+    {
+        if (objectToRemove != null)
+        {
+            placedObjects.Remove(objectToRemove);
+            placedObjectsData.RemoveAll(data => data.Object == objectToRemove);
+            Destroy(objectToRemove);
+        }
+    }
+
+
+
     private void RotatePlacingObject()
     {
         // Rotate the transparent object using mouse scroll
@@ -45,6 +138,7 @@ public class GrabScript: MonoBehaviour
         // Rotate the transparent object around its own up axis (Y-axis) based on the scroll input
         transparentObject.transform.Rotate(Vector3.up, scrollInput * rotationSpeed);
     }
+
     private void SelectObject()
     {
         RaycastHit hit;
@@ -52,20 +146,20 @@ public class GrabScript: MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            Debug.Log("RaycastHit");
             for (int i = 0; i < transparentPrefabs.Length; i++)
             {
-                if (hit.collider.CompareTag("Selectable" + i)) // Use "Selectable0", "Selectable1", etc.
+                if (hit.collider.CompareTag("Selectable" + i))
                 {
                     Vector3 spawnPosition = hit.point + (hit.point - cam.transform.position).normalized * distanceFromPlayer;
                     transparentObject = Instantiate(transparentPrefabs[i], spawnPosition, Quaternion.identity);
+                    lastTransparentPosition = spawnPosition; // Store the position
                     selectedPrefabIndex = i;
 
                     // Create the placing object at the hit point to follow the cursor
                     Vector3 placingPosition = spawnPosition;
-                    placingPosition.z = hit.point.z; // Keep the z position the same
-                    placingObject = Instantiate(regularPrefabs[selectedPrefabIndex], placingPosition, Quaternion.identity);
-                    placingObject.SetActive(false);
+                    // placingPosition.z = hit.point.z; // Keep the z position the same
+                    // placingObject = Instantiate(regularPrefabs[selectedPrefabIndex], placingPosition, Quaternion.identity);
+                    //placingObject.SetActive(false);
 
                     isPlacing = true;
                     break;
@@ -73,104 +167,65 @@ public class GrabScript: MonoBehaviour
             }
         }
     }
-
-
-    /*
-        private void UpdatePlacingObjectPosition()
-        {
-            Vector3 mousePosition = Input.mousePosition;
-            mousePosition.z = distanceFromPlayerWhilePlacing; // Set the distance from the player as the z position
-            Vector3 newPosition = cam.ScreenToWorldPoint(mousePosition);
-
-            // Adjust the placing object's distance from the player while placing
-            Vector3 playerToCursor = newPosition - cam.transform.position;
-            playerToCursor.Normalize();
-            newPosition = cam.transform.position + playerToCursor * distanceFromPlayerWhilePlacing;
-
-            newPosition.z = placingObject.transform.position.z; // Maintain the z position
-
-            // Rotate the transparent object using mouse scroll
-            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-            transparentObject.transform.Rotate(Vector3.right, scrollInput * 10f); // Adjust the rotation speed as needed
-
-            transparentObject.transform.position = newPosition;
-        }
-    */
-
-
-
     private void UpdatePlacingObjectPosition()
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit) && hit.collider.CompareTag("Ground"))
         {
-            // Find the ground plane (you may need to specify the layer or tag of your ground objects)
-            if (hit.collider.CompareTag("Ground"))
-            {
-                // Calculate the new position on the ground plane
-                Vector3 groundNormal = hit.normal; // The normal of the ground
-                Vector3 newPosition = hit.point + groundNormal * 0.1f; // Offset slightly above the ground
+            Vector3 groundNormal = hit.normal;
+            Vector3 newPosition = hit.point + groundNormal * 0.1f; // Offset slightly above the ground
 
-                // Rotate the transparent object using mouse scroll
-                float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-                transparentObject.transform.Rotate(Vector3.right, scrollInput * 10f); // Adjust the rotation speed as needed
+            // Rotate the transparent object using mouse scroll
+            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+            transparentObject.transform.Rotate(Vector3.right, scrollInput * 10f);
 
-                transparentObject.transform.position = newPosition;
-            }
+            transparentObject.transform.position = newPosition;
         }
     }
 
 
-
-
-
-
-    /*
-        private void PlaceObject()
-        {
-            placingObject.SetActive(true);
-            placingObject.transform.position = transparentObject.transform.position; // Set the position
-            placingObject.transform.localScale = transparentObject.transform.localScale; // Set the scale
-            Destroy(transparentObject);
-
-            if (selectedPrefabIndex >= 0 && selectedPrefabIndex < regularPrefabs.Length)
-            {
-                Vector3 mousePosition = Input.mousePosition;
-                mousePosition.z = cam.nearClipPlane;
-                Instantiate(regularPrefabs[selectedPrefabIndex], cam.ScreenToWorldPoint(mousePosition), Quaternion.identity);
-            }
-
-            selectedPrefabIndex = -1;
-            isPlacing = false;
-        }
-    */
+   
     private void PlaceObject()
     {
-        placingObject.SetActive(true);
-        placingObject.transform.position = transparentObject.transform.position; // Set the position
+        //placingObject.SetActive(true);
 
-        // Get the current rotation of the transparent object
-
-
-
-
+        // Set the position and rotation of the placed object to match the last transparent object's position and rotation
         if (selectedPrefabIndex >= 0 && selectedPrefabIndex < regularPrefabs.Length)
         {
             Vector3 mousePosition = Input.mousePosition;
             mousePosition.z = cam.nearClipPlane;
             Quaternion currentRotation = transparentObject.transform.rotation;
-            // Apply the rotation to the placed object when instantiating
-            GameObject placedObject = Instantiate(regularPrefabs[selectedPrefabIndex], cam.ScreenToWorldPoint(mousePosition), currentRotation);
+            // Destroy the transparent object before instantiating the regular object
+            Destroy(transparentObject);
 
-            // Add the placed object to the PivotLineManager's list
+            GameObject placedObject = Instantiate(regularPrefabs[selectedPrefabIndex], transparentObject.transform.position, currentRotation);
+            placedObject.tag = "PlacedObject"; // Tagging the object as placed
+            placedObjects.Add(placedObject); // Add to placed objects list
+            UpdatePivotMovementValues(placedObject); // Calculate pivot movement values
+
             pivotLineManager.placedObjects.Add(placedObject);
+
         }
-        Destroy(transparentObject);
+
+
         selectedPrefabIndex = -1;
         isPlacing = false;
+
+        // Set the position of the placing object to match the last transparent object's position
+        //  placObject.transform.position = lastTransparentPosition;
+
     }
 
 
+    private void UpdatePivotMovementValues(GameObject placedObject)
+    {
+        float distance = Vector3.Distance(centerLine.transform.position, placedObject.transform.position);
+        Vector3 direction = (placedObject.transform.position - centerLine.transform.position).normalized;
+        float angle = Vector3.Angle(centerLine.transform.forward, direction);
+        Debug.Log(placedObject.name);
+        PlacedObjectData data = new PlacedObjectData(placedObject, distance, angle);
+        placedObjectsData.Add(data);
+    }
 }
