@@ -9,6 +9,19 @@ public class GrabScript : MonoBehaviour
     public float distanceFromPlayer = 2.0f;
     public PivotLineManager pivotLineManager;
     public GameObject centerLine; // Reference to the pivot object
+    //AGK CHANGES
+    // supply count
+    public int cleanSupply;
+    public int clothes;
+    public int firstAid;
+    public int food;
+    public int kitchenSupply;
+    public int vehicle;
+    // Check gameobjects
+    public GameObject[] Checks;
+    
+
+
 
     private GameObject transparentObject;
     private bool isPlacing = false;
@@ -121,9 +134,28 @@ public class GrabScript : MonoBehaviour
     {
         if (objectToRemove != null)
         {
+            if (objectToRemove.CompareTag("PlacedObject0"))
+            {
+                cleanSupply--;}
+            else if (objectToRemove.CompareTag("PlacedObject1"))
+            {
+                clothes--;}
+            else if (objectToRemove.CompareTag("PlacedObject2"))
+            {
+                firstAid--;}
+            else if (objectToRemove.CompareTag("PlacedObject3"))
+            {
+                food--;}
+            else if (objectToRemove.CompareTag("PlacedObject4"))
+            {
+                kitchenSupply--;}
+            else if (objectToRemove.CompareTag("PlacedObject5"))
+            {
+                vehicle--;}
             placedObjects.Remove(objectToRemove);
             placedObjectsData.RemoveAll(data => data.Object == objectToRemove);
             Destroy(objectToRemove);
+            requirementCheck();
         }
     }
 
@@ -201,7 +233,7 @@ public class GrabScript : MonoBehaviour
             Destroy(transparentObject);
 
             GameObject placedObject = Instantiate(regularPrefabs[selectedPrefabIndex], transparentObject.transform.position, currentRotation);
-            placedObject.tag = "PlacedObject"; // Tagging the object as placed
+            placedObject.tag = "PlacedObject" + selectedPrefabIndex; // Tagging the object as placed
             placedObjects.Add(placedObject); // Add to placed objects list
             UpdatePivotMovementValues(placedObject); // Calculate pivot movement values
 
@@ -209,9 +241,26 @@ public class GrabScript : MonoBehaviour
 
         }
 
-
+        // Updates Supplies count
+        switch (selectedPrefabIndex)
+        {
+            case 0: cleanSupply++;
+                break;
+            case 1: clothes++;
+                break;
+            case 2: firstAid++;
+                break;
+            case 3: food++;
+                break;
+            case 4: kitchenSupply++;
+                break;
+            default: vehicle++;
+                break;
+                
+        }
         selectedPrefabIndex = -1;
         isPlacing = false;
+        requirementCheck();
 
         // Set the position of the placing object to match the last transparent object's position
         //  placObject.transform.position = lastTransparentPosition;
@@ -227,5 +276,41 @@ public class GrabScript : MonoBehaviour
         Debug.Log(placedObject.name);
         PlacedObjectData data = new PlacedObjectData(placedObject, distance, angle);
         placedObjectsData.Add(data);
+    }
+
+    private void requirementCheck()
+    {
+        if (vehicle >= 2)
+        {
+            Checks[0].SetActive(true);
+        }
+        else
+        {
+            Checks[0].SetActive(false);
+        }
+        if (kitchenSupply >= 1)
+        {
+            Checks[1].SetActive(true);
+        }
+        else
+        {
+            Checks[1].SetActive(false);
+        }
+        if (food >= 3)
+        {
+            Checks[2].SetActive(true);
+        }
+        else
+        {
+            Checks[2].SetActive(false);
+        }
+        if (firstAid >= 4)
+        {
+            Checks[3].SetActive(true);
+        }
+        else
+        {
+            Checks[3].SetActive(false);
+        }
     }
 }

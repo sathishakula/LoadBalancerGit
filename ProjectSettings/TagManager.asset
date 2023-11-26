@@ -13,6 +13,12 @@ TagManager:
   - Ground
   - Floor
   - PlacedObject
+  - PlacedObject0
+  - PlacedObject1
+  - PlacedObject2
+  - PlacedObject3
+  - PlacedObject4
+  - PlacedObject5
   layers:
   - Default
   - TransparentFX

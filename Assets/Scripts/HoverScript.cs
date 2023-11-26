@@ -19,7 +19,7 @@ public class HoverScript : MonoBehaviour
             GameObject hitObject = hit.collider.gameObject;
 
             // Check if the hovered object has the "PlacedObject" tag
-            if (hitObject.tag == "PlacedObject")
+            if (hitObject.tag == "PlacedObject0" || hitObject.tag =="PlacedObject1" || hitObject.tag =="PlacedObject2" || hitObject.tag =="PlacedObject3" || hitObject.tag =="PlacedObject4" || hitObject.tag =="PlacedObject5")
             {
                 currentHoverObject = hitObject;
             }
