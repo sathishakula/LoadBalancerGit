@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 public class GrabScript : MonoBehaviour
 {
@@ -17,6 +18,18 @@ public class GrabScript : MonoBehaviour
     public int food;
     public int kitchenSupply;
     public int vehicle;
+    //LER CHANGES
+    // total weight and supply weights
+    public int weight = 0;
+    public const int CLEANSUPPLY_WEIGHT = 200;
+    public const int CLOTHES_WEIGHT = 100;
+    public const int FIRSTAID_WEIGHT = 200;
+    public const int FOOD_WEIGHT = 100;
+    public const int KITCHENSUPPLY_WEIGHT = 100;
+    public const int VEHICLE_WEIGHT = 300;
+    // weight text
+    [SerializeField] private TextMeshProUGUI weightText;
+
     // Check gameobjects
     public GameObject[] Checks;
     
@@ -128,6 +141,20 @@ public class GrabScript : MonoBehaviour
             UpdatePlacingObjectPosition();
             RotatePlacingObject();
         }
+
+        // update total weight based on count of each type of object
+        weight = (
+            cleanSupply * CLEANSUPPLY_WEIGHT +
+            clothes * CLOTHES_WEIGHT+
+            firstAid * FIRSTAID_WEIGHT +
+            food * FOOD_WEIGHT +
+            kitchenSupply * KITCHENSUPPLY_WEIGHT +
+            vehicle * VEHICLE_WEIGHT
+        );
+
+        // update weight text
+        weightText.text = weight.ToString() + " kg";
+
     }
 
     private void RemoveAndDestroyPlacedObject(GameObject objectToRemove)
@@ -266,7 +293,6 @@ public class GrabScript : MonoBehaviour
         //  placObject.transform.position = lastTransparentPosition;
 
     }
-
 
     private void UpdatePivotMovementValues(GameObject placedObject)
     {
