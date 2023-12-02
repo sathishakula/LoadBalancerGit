@@ -304,9 +304,10 @@ public class GrabScript : MonoBehaviour
         placedObjectsData.Add(data);
     }
 
+    //AGK Method
     private void requirementCheck()
     {
-        if (vehicle >= 2)
+        if (vehicle >= 1)
         {
             Checks[0].SetActive(true);
         }
@@ -322,7 +323,7 @@ public class GrabScript : MonoBehaviour
         {
             Checks[1].SetActive(false);
         }
-        if (food >= 3)
+        if (food >= 4)
         {
             Checks[2].SetActive(true);
         }
@@ -330,13 +331,29 @@ public class GrabScript : MonoBehaviour
         {
             Checks[2].SetActive(false);
         }
-        if (firstAid >= 4)
+        if (firstAid >= 2)
         {
             Checks[3].SetActive(true);
         }
         else
         {
             Checks[3].SetActive(false);
+        }
+        if (clothes >= 4)
+        {
+            Checks[4].SetActive(true);
+        }
+        else
+        {
+            Checks[4].SetActive(false);
+        }
+        if (cleanSupply >= 1)
+        {
+            Checks[5].SetActive(true);
+        }
+        else
+        {
+            Checks[5].SetActive(false);
         }
     }
 }
