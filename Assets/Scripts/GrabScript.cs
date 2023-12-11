@@ -29,10 +29,12 @@ public class GrabScript : MonoBehaviour
     public const int VEHICLE_WEIGHT = 300;
     // weight text
     [SerializeField] private TextMeshProUGUI weightText;
-
+    // AGK
     // Check gameobjects
     public GameObject[] Checks;
-    
+    public GameObject minCheck;
+    private bool isMinMeet;
+    public TextMeshProUGUI pointTxt;
 
 
 
@@ -307,53 +309,86 @@ public class GrabScript : MonoBehaviour
     //AGK Method
     private void requirementCheck()
     {
+        int count = 0;
         if (vehicle >= 1)
         {
             Checks[0].SetActive(true);
+            count++;
         }
         else
         {
             Checks[0].SetActive(false);
         }
+
         if (kitchenSupply >= 1)
         {
             Checks[1].SetActive(true);
+            count++;
         }
         else
         {
             Checks[1].SetActive(false);
         }
+
         if (food >= 4)
         {
             Checks[2].SetActive(true);
+            count++;
         }
         else
         {
             Checks[2].SetActive(false);
         }
+
         if (firstAid >= 2)
         {
             Checks[3].SetActive(true);
+            count++;
         }
         else
         {
             Checks[3].SetActive(false);
         }
+
         if (clothes >= 4)
         {
             Checks[4].SetActive(true);
+            count++;
         }
         else
         {
             Checks[4].SetActive(false);
         }
+
         if (cleanSupply >= 1)
         {
             Checks[5].SetActive(true);
+            count++;
         }
         else
         {
             Checks[5].SetActive(false);
         }
+
+        if (count == 6)
+        {
+            minCheck.SetActive(true);
+            isMinMeet = true;
+        }
+        else
+        {
+            minCheck.SetActive(false);
+            isMinMeet = false;
+        }
+
+        int points = (food - 4) * 5;
+        if (isMinMeet)
+        {
+            points += 50;}
+        if (points >= 0)
+        {
+            pointTxt.SetText(points.ToString());
+        }
     }
 }
+
