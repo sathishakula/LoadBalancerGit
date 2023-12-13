@@ -69,7 +69,7 @@ public class HoverScript : MonoBehaviour
         GUI.Label(new Rect(10, 10, 200, 50), $"Total Moment: {totalMoment:F2}Nm", guiStyle);
     }
 
-    private float CalculateTotalMoment()
+    public float CalculateTotalMoment()
     {
         float totalMoment = 0f;
         Debug.Log($"Calculating Total Moment for {placedObjects.Count} objects"); // Debugging line

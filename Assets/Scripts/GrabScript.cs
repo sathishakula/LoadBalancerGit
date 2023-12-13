@@ -33,9 +33,12 @@ public class GrabScript : MonoBehaviour
     // Check gameobjects
     public GameObject[] Checks;
     public GameObject minCheck;
-    private bool isMinMeet;
+    public bool isMinMeet;
+    public bool isBalanced;
     public TextMeshProUGUI pointTxt;
-
+    public HoverScript Hover;
+    // Screens
+    public GameObject successScreen;
 
 
     private GameObject transparentObject;
@@ -388,6 +391,33 @@ public class GrabScript : MonoBehaviour
         if (points >= 0)
         {
             pointTxt.SetText(points.ToString());
+        }
+
+        float totalMoment = Hover.CalculateTotalMoment();
+        if (totalMoment >= -200 && totalMoment <= 200)
+        {
+            isBalanced = true;
+        }
+        else
+        {
+            isBalanced = false;
+        }
+    }
+    //AGK End level logic 
+    public void EndButton()
+    {
+        //   if (!isMinMeet)        * disabled for testing
+        //{
+            // incomplete screen
+       // }
+       
+        if (isBalanced == false)        // if else
+        {
+            // not balanced screen
+        }
+        else
+        {
+            successScreen.SetActive(true);
         }
     }
 }
