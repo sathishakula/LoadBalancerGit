@@ -35,7 +35,9 @@ public class GrabScript : MonoBehaviour
     public GameObject minCheck;
     public bool isMinMeet;
     public bool isBalanced;
+    public int points;
     public TextMeshProUGUI pointTxt;
+    public TextMeshProUGUI successTxt;
     public HoverScript Hover;
     // Screens
     public GameObject successScreen;
@@ -165,7 +167,7 @@ public class GrabScript : MonoBehaviour
     private void RemoveAndDestroyPlacedObject(GameObject objectToRemove)
     {
         if (objectToRemove != null)
-        {
+        {   //  AGK updates object counts
             if (objectToRemove.CompareTag("PlacedObject0"))
             {
                 cleanSupply--;}
@@ -273,7 +275,7 @@ public class GrabScript : MonoBehaviour
 
         }
 
-        // Updates Supplies count
+        //  AGK Updates objects count
         switch (selectedPrefabIndex)
         {
             case 0: cleanSupply++;
@@ -309,9 +311,10 @@ public class GrabScript : MonoBehaviour
         placedObjectsData.Add(data);
     }
 
-    //AGK Method
+    
+    //AGK Checks and Booleans update (called in place and del object)
     private void requirementCheck()
-    {
+    {   // Checks update
         int count = 0;
         if (vehicle >= 1)
         {
@@ -372,7 +375,7 @@ public class GrabScript : MonoBehaviour
         {
             Checks[5].SetActive(false);
         }
-
+        // isMinMeet and minCheck update
         if (count == 6)
         {
             minCheck.SetActive(true);
@@ -383,8 +386,8 @@ public class GrabScript : MonoBehaviour
             minCheck.SetActive(false);
             isMinMeet = false;
         }
-
-        int points = (food - 4) * 5;
+        // Point calculation
+        points = (food - 4) * 5;
         if (isMinMeet)
         {
             points += 50;}
@@ -392,9 +395,9 @@ public class GrabScript : MonoBehaviour
         {
             pointTxt.SetText(points.ToString());
         }
-
+        // isBalanced update
         float totalMoment = Hover.CalculateTotalMoment();
-        if (totalMoment >= -200 && totalMoment <= 200)
+        if (totalMoment >= -200 && totalMoment <= 200)       // Set to +-200 for testing
         {
             isBalanced = true;
         }
@@ -403,20 +406,23 @@ public class GrabScript : MonoBehaviour
             isBalanced = false;
         }
     }
-    //AGK End level logic 
+    //AGK End level logic (used by finish level button)
     public void EndButton()
     {
-        //   if (!isMinMeet)        * disabled for testing
+        //   if (!isMinMeet)        * disabled for testing success screen
         //{
-            // incomplete screen
+            // incomplete screen, minimum not met
        // }
        
         if (isBalanced == false)        // if else
         {
-            // not balanced screen
+            // not balanced screen, weight not balanced
+            // balance range set to +-200 for easy testing
         }
         else
-        {
+        {   
+            // possibly add "Are you sure"
+            successTxt.SetText(points.ToString() + " Points");  // will currently show up negative bc min requirements are disabled
             successScreen.SetActive(true);
         }
     }
