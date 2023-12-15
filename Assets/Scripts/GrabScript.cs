@@ -18,7 +18,7 @@ public class GrabScript : MonoBehaviour
     public int food;
     public int kitchenSupply;
     public int vehicle;
-    //LER CHANGES
+    // LER
     // total weight and supply weights
     public int weight = 0;
     public const int CLEANSUPPLY_WEIGHT = 200;
@@ -49,6 +49,8 @@ public class GrabScript : MonoBehaviour
     private Vector3 lastTransparentPosition;
 
     private List<GameObject> placedObjects = new List<GameObject>(); // Track all placed objects
+
+    public GameObject notifWindow;
 
     private class PlacedObjectData
     {
@@ -409,15 +411,15 @@ public class GrabScript : MonoBehaviour
     //AGK End level logic (used by finish level button)
     public void EndButton()
     {
-        //   if (!isMinMeet)        * disabled for testing success screen
-        //{
-            // incomplete screen, minimum not met
-       // }
-       
-        if (isBalanced == false)        // if else
+        // LER sync to notification popup
+        if (!isMinMeet)
         {
-            // not balanced screen, weight not balanced
-            // balance range set to +-200 for easy testing
+            notifWindow.GetComponent<NotificationScript>().AddToQueue("Minimum requirements not met!");
+        }
+       
+        else if (isBalanced == false)
+        {
+            notifWindow.GetComponent<NotificationScript>().AddToQueue("Load not balanced!");
         }
         else
         {   
